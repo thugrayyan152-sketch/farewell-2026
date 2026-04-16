@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farewell 2026 - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #FFD700;
+            --dark-gold: #B8860B;
+            --purple: #6B46C1;
+            --dark-purple: #4C1D95;
+            --black: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(10,10,10,0.9) 0%, rgba(15,15,35,0.95) 100%),
+                        url('https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=1920&q=80') center/cover fixed;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: linear-gradient(180deg, #0f0f23 0%, #1a1a2e 100%);
+            padding: 30px;
+            border-right: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+        }
+
+        .logo h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold), #fff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: rgba(255,255,255,0.7);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 215, 0, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .nav-link span {
+            font-size: 20px;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+            color: var(--black);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349, #f45c43);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 30px rgba(255, 215, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon.blue { background: rgba(255, 215, 0, 0.15); color: var(--gold); }
+        .stat-icon.green { background: rgba(17, 153, 142, 0.2); color: #38ef7d; }
+        .stat-icon.orange { background: rgba(243, 156, 18, 0.2); color: #f39c12; }
+        .stat-icon.red { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--gold);
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .search-box input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        th {
+            color: rgba(255,255,255,0.6);
+            font-weight: 500;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-entered {
+            background: rgba(17, 153, 142, 0.2);
+            color: #38ef7d;
+        }
+
+        .status-pending {
+            background: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .add-student-form {
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--dark-gold));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+                padding: 15px;
+            }
+            .sidebar-logo {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+            .nav-links {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .nav-links a {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+            .main-header h1 {
+                font-size: 1.5rem;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            .stat-card {
+                padding: 15px;
+            }
+            .stat-value {
+                font-size: 1.8rem;
+            }
+            .content-card {
+                padding: 15px;
+            }
+            .card-title {
+                font-size: 1.1rem;
+            }
+            .search-box {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
+            table {
+                min-width: 500px;
+                font-size: 0.85rem;
+            }
+            th, td {
+                padding: 10px;
+            }
+            .form-group input {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            .password-box {
+                padding: 2rem;
+                margin: 20px;
+            }
+            .password-box h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                padding: 10px;
+            }
+            .sidebar-logo {
+                font-size: 1.3rem;
+            }
+            .nav-links {
+                gap: 8px;
+            }
+            .nav-links a {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            .main-content {
+                padding: 10px;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .main-header h1 {
+                font-size: 1.3rem;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .stat-card {
+                padding: 12px;
+            }
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            .stat-label {
+                font-size: 0.75rem;
+            }
+            .content-card {
+                padding: 12px;
+            }
+            .btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+            .password-box {
+                padding: 1.5rem;
+                margin: 15px;
+            }
+            .password-box h2 {
+                font-size: 1.3rem;
+            }
+            .password-input {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            .password-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .nav-links a {
+                font-size: 0.75rem;
+                padding: 5px 8px;
+            }
+        }
+
+        /* Password Protection Overlay */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10,10,10,0.7) 0%, rgba(15,15,35,0.7) 100%),
+                        url('https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=1920&q=80') center/cover fixed;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .password-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 24px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.1);
+        }
+
+        .password-box h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--gold), #fff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .password-box p {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .password-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .password-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .password-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .password-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .password-error {
+            color: #ff6b6b;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .main-content.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Protection Overlay -->
+    <div class="password-overlay" id="passwordOverlay">
+        <div class="password-box">
+            <h2>🔐 Admin Access</h2>
+            <p>Enter password to access Admin Panel</p>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Enter password...">
+            <button class="password-btn" onclick="checkPassword()">Unlock</button>
+            <div class="password-error" id="passwordError">Incorrect password. Please try again.</div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">⚙️</div>
+            <h2>Admin Panel</h2>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a class="nav-link active" onclick="showSection('dashboard')">
+                    <span>📊</span> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showSection('students')">
+                    <span>👨‍🎓</span> Students
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="showSection('add')">
+                    <span>➕</span> Add Student
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/">
+                    <span>�</span> Back to Home
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1 style="font-family: 'Playfair Display', serif; background: linear-gradient(135deg, var(--gold), #fff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Dashboard Overview</h1>
+            <div class="header-actions">
+                <button class="btn btn-danger" onclick="resetAll()">
+                    <span>🔄</span> Reset All
+                </button>
+                <button class="btn btn-success" onclick="exportData()">
+                    <span>📥</span> Export
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">👨‍🎓</div>
+                <div class="stat-value" id="totalStudents">0</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">✅</div>
+                <div class="stat-value" id="enteredStudents">0</div>
+                <div class="stat-label">Entered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">⏳</div>
+                <div class="stat-value" id="pendingStudents">0</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon red">📊</div>
+                <div class="stat-value" id="entryRate">0%</div>
+                <div class="stat-label">Entry Rate</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">👨‍🎓 Student List</h3>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search students..." onkeyup="searchStudents()">
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Roll #</th>
+                                <th>Father Name</th>
+                                <th>Status</th>
+                                <th>Entry Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">➕ Add New Student</h3>
+                </div>
+                <form class="add-student-form" onsubmit="addStudent(event)">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="newName" required placeholder="Enter full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Roll Number</label>
+                        <input type="text" id="newRoll" placeholder="e.g., P50">
+                    </div>
+                    <div class="form-group">
+                        <label>Father Name</label>
+                        <input type="text" id="newFather" placeholder="Enter father name">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <span>➕</span> Add Student
+                    </button>
+                </form>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="margin-bottom: 15px; font-size: 16px;">📊 Entry Progress</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progressText">0/0 students entered</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration - Change this to your backend URL after deploying
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? ''  // Empty for localhost (same origin)
+            : 'https://your-backend-url.onrender.com';  // Replace with your deployed backend URL
+
+        let allStudents = [];
+
+        async function loadStudents() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/students`);
+                allStudents = await response.json();
+                updateStats();
+                renderTable(allStudents);
+            } catch (error) {
+                console.error('Failed to load students:', error);
+            }
+        }
+
+        function updateStats() {
+            const total = allStudents.length;
+            const entered = allStudents.filter(s => s.has_entered).length;
+            const pending = total - entered;
+            const rate = total > 0 ? Math.round((entered / total) * 100) : 0;
+
+            document.getElementById('totalStudents').textContent = total;
+            document.getElementById('enteredStudents').textContent = entered;
+            document.getElementById('pendingStudents').textContent = pending;
+            document.getElementById('entryRate').textContent = rate + '%';
+
+            document.getElementById('progressBar').style.width = rate + '%';
+            document.getElementById('progressText').textContent = `${entered}/${total} students entered`;
+            document.getElementById('progressPercent').textContent = rate + '%';
+        }
+
+        function renderTable(students) {
+            const tbody = document.getElementById('studentTable');
+            tbody.innerHTML = students.map(s => `
+                <tr>
+                    <td style="font-weight: 500;">${s.name}</td>
+                    <td>${s.roll_number || '-'}</td>
+                    <td>${s.father_name || '-'}</td>
+                    <td>
+                        <span class="status-badge ${s.has_entered ? 'status-entered' : 'status-pending'}">
+                            ${s.has_entered ? '✅ Entered' : '⏳ Pending'}
+                        </span>
+                    </td>
+                    <td style="color: rgba(255,255,255,0.6); font-size: 13px;">
+                        ${s.entry_time || '-'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function searchStudents() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allStudents.filter(s => 
+                s.name.toLowerCase().includes(query) ||
+                (s.roll_number && s.roll_number.toLowerCase().includes(query))
+            );
+            renderTable(filtered);
+        }
+
+        async function addStudent(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('newName').value.trim();
+            const roll = document.getElementById('newRoll').value.trim();
+            const father = document.getElementById('newFather').value.trim();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/students/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, roll_number: roll, father_name: father })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('✅ Student added successfully!');
+                    document.getElementById('newName').value = '';
+                    document.getElementById('newRoll').value = '';
+                    document.getElementById('newFather').value = '';
+                    loadStudents();
+                } else {
+                    alert('❌ ' + (data.error || 'Failed to add student'));
+                }
+            } catch (error) {
+                alert('❌ Network error');
+            }
+        }
+
+        async function resetAll() {
+            if (!confirm('⚠️ Are you sure you want to reset all entries?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/reset`, { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('✅ All entries reset successfully!');
+                    loadStudents();
+                }
+            } catch (error) {
+                alert('❌ Reset failed');
+            }
+        }
+
+        function exportData() {
+            const csv = [
+                ['Name', 'Roll Number', 'Father Name', 'Status', 'Entry Time'],
+                ...allStudents.map(s => [
+                    s.name,
+                    s.roll_number || '',
+                    s.father_name || '',
+                    s.has_entered ? 'Entered' : 'Pending',
+                    s.entry_time || ''
+                ])
+            ].map(row => row.join(',')).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `farewell-2026-students-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function showSection(section) {
+            // Visual feedback only - all content is on one page
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.closest('.nav-link').classList.add('active');
+        }
+
+        // Auto refresh every 5 seconds
+        loadStudents();
+        setInterval(loadStudents, 5000);
+
+        // Password Protection
+        const CORRECT_PASSWORD = 'qwer1234@#$&qazWSX';
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            const error = document.getElementById('passwordError');
+
+            if (input === CORRECT_PASSWORD) {
+                document.getElementById('passwordOverlay').style.display = 'none';
+                sessionStorage.setItem('adminAuthenticated', 'true');
+            } else {
+                error.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        // Check if already authenticated in this session
+        if (sessionStorage.getItem('adminAuthenticated') === 'true') {
+            document.getElementById('passwordOverlay').style.display = 'none';
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+    </script>
+</body>
+</html>

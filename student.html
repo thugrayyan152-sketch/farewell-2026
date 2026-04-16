@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farewell 2026 - Student QR Pass</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --gold: #FFD700;
+            --dark-gold: #B8860B;
+            --purple: #6B46C1;
+            --dark-purple: #4C1D95;
+            --black: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, rgba(10,10,10,0.85) 0%, rgba(26,26,46,0.9) 100%),
+                        url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80') center/cover fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8)); }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--gold), #fff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            margin-bottom: 30px;
+            letter-spacing: 0.1em;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+
+        .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(30, 30, 40, 0.95);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .suggestion-item:hover {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+            color: var(--gold);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+            color: var(--black);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            margin-top: 15px;
+            box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(17, 153, 142, 0.4);
+        }
+
+        #qrContainer {
+            margin-top: 30px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .qr-wrapper {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .student-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .student-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+
+        .student-details {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .entry-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .badge-pending {
+            background: rgba(255, 215, 0, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .badge-entered {
+            background: rgba(17, 153, 142, 0.2);
+            color: #38ef7d;
+            border: 1px solid rgba(17, 153, 142, 0.3);
+        }
+
+        .error {
+            color: #ff6b6b;
+            background: rgba(220, 20, 60, 0.15);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .success {
+            color: #38ef7d;
+            background: rgba(17, 153, 142, 0.15);
+            border: 1px solid rgba(17, 153, 142, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 25px;
+            padding: 12px 25px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 25px;
+            text-decoration: none;
+            color: var(--gold);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: var(--gold);
+            color: var(--black);
+            transform: translateY(-2px);
+        }
+
+        @media print {
+            body { background: white; }
+            .container { 
+                background: white; 
+                box-shadow: none; 
+                border: 1px solid #ddd;
+            }
+            .btn, .back-link, input { display: none; }
+            #qrContainer { 
+                display: block !important; 
+                background: white;
+                border: none;
+            }
+            .student-info {
+                background: #f5f5f5;
+                border: 1px solid #ddd;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 25px 20px;
+                border-radius: 20px;
+            }
+            h1 { font-size: 24px; }
+            .header-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 2.5rem;
+            }
+            .subtitle { font-size: 0.9rem; }
+            input {
+                padding: 12px 15px;
+                font-size: 0.95rem;
+            }
+            .btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            .back-link {
+                font-size: 0.8rem;
+                padding: 8px 16px;
+            }
+            #qrContainer {
+                padding: 15px;
+            }
+            .student-name {
+                font-size: 1.1rem;
+            }
+            .student-dept, .entry-status {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+            h1 {
+                font-size: 20px;
+                margin-bottom: 5px;
+            }
+            .header-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 2rem;
+                margin-bottom: 15px;
+            }
+            .subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 20px;
+            }
+            input {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+            .btn {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+            .back-link {
+                font-size: 0.75rem;
+                padding: 6px 12px;
+                margin-top: 15px;
+            }
+            .error-message, .success-message {
+                font-size: 0.85rem;
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            h1 { font-size: 18px; }
+            .container { padding: 15px 12px; }
+            .header-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.8rem;
+            }
+            .subtitle { font-size: 0.75rem; }
+            .btn { padding: 8px 12px; font-size: 0.8rem; }
+            input { padding: 8px 10px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-icon">🎓</div>
+
+        <h1>Student Portal</h1>
+        <p class="subtitle">Generate Your Entry QR Pass</p>
+
+        <div class="input-group">
+            <input type="text" id="studentName" placeholder="Enter your full name..." autocomplete="off">
+            <div class="suggestions" id="suggestions"></div>
+        </div>
+
+        <button class="btn btn-primary" onclick="generateQR()">
+            <span>🔍</span> Verify & Generate QR
+        </button>
+
+        <div class="error" id="error"></div>
+        <div class="success" id="success"></div>
+
+        <div id="qrContainer">
+            <div class="qr-wrapper">
+                <div id="qrcode"></div>
+            </div>
+            <div class="student-info">
+                <div class="student-name" id="displayName"></div>
+                <div class="student-details" id="displayDetails"></div>
+                <span class="entry-badge badge-pending" id="entryStatus">⏳ Entry Pending</span>
+            </div>
+            <button class="btn btn-success" onclick="downloadQR()">
+                <span>📥</span> Download Pass
+            </button>
+        </div>
+
+        <a href="/" class="back-link">← Back to Home</a>
+    </div>
+
+    <script>
+        // API Configuration - Change this to your backend URL after deploying
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? ''  // Empty for localhost (same origin)
+            : 'https://your-backend-url.onrender.com';  // Replace with your deployed backend URL
+
+        let students = [];
+        let currentStudent = null;
+        let qrCode = null;
+
+        // Load students
+        async function loadStudents() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/students`);
+                students = await response.json();
+            } catch (error) {
+                console.error('Failed to load students:', error);
+            }
+        }
+
+        loadStudents();
+
+        // Autocomplete
+        const input = document.getElementById('studentName');
+        const suggestions = document.getElementById('suggestions');
+
+        input.addEventListener('input', function() {
+            const value = this.value.toLowerCase();
+            if (value.length < 1) {
+                suggestions.style.display = 'none';
+                return;
+            }
+
+            const matches = students.filter(s => 
+                s.name.toLowerCase().includes(value)
+            ).slice(0, 5);
+
+            if (matches.length > 0) {
+                suggestions.innerHTML = matches.map(s => 
+                    `<div class="suggestion-item" onclick="selectStudent('${s.name}')">${s.name}</div>`
+                ).join('');
+                suggestions.style.display = 'block';
+            } else {
+                suggestions.style.display = 'none';
+            }
+        });
+
+        function selectStudent(name) {
+            input.value = name;
+            suggestions.style.display = 'none';
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.input-group')) {
+                suggestions.style.display = 'none';
+            }
+        });
+
+        async function generateQR() {
+            const name = input.value.trim();
+            const errorDiv = document.getElementById('error');
+            const successDiv = document.getElementById('success');
+            const qrContainer = document.getElementById('qrContainer');
+
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            if (!name) {
+                errorDiv.textContent = '⚠️ Please enter your name';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/verify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    errorDiv.textContent = '❌ ' + (data.error || 'Student not found');
+                    errorDiv.style.display = 'block';
+                    qrContainer.style.display = 'none';
+                    return;
+                }
+
+                currentStudent = data.student;
+
+                // Clear previous QR
+                document.getElementById('qrcode').innerHTML = '';
+
+                // Generate new QR
+                qrCode = new QRCode(document.getElementById('qrcode'), {
+                    text: currentStudent.name,
+                    width: 200,
+                    height: 200,
+                    colorDark: '#333',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                // Update display
+                document.getElementById('displayName').textContent = currentStudent.name;
+                document.getElementById('displayDetails').textContent = 
+                    `Roll: ${currentStudent.roll_number || 'N/A'} | Father: ${currentStudent.father_name || 'N/A'}`;
+
+                const statusBadge = document.getElementById('entryStatus');
+                if (currentStudent.has_entered) {
+                    statusBadge.textContent = '✅ Entry Completed';
+                    statusBadge.className = 'entry-badge badge-entered';
+                } else {
+                    statusBadge.textContent = '⏳ Entry Pending';
+                    statusBadge.className = 'entry-badge badge-pending';
+                }
+
+                qrContainer.style.display = 'block';
+                successDiv.textContent = '✅ QR Pass generated successfully!';
+                successDiv.style.display = 'block';
+
+            } catch (error) {
+                errorDiv.textContent = '❌ Network error. Please try again.';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = `Farewell2026-${currentStudent.name.replace(/\s+/g, '-')}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+        }
+
+        // Enter key support
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') generateQR();
+        });
+    </script>
+</body>
+</html>
